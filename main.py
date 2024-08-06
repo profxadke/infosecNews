@@ -17,6 +17,10 @@ from hashlib import md5
 
 # warnings.filterwarnings('ignore', category=MarkupResemblesLocatorWarning)
 
+async def on_fetch(request, env):
+    import asgi
+
+    return await asgi.fetch(api, request, env)
 
 class News(BaseModel):
     content: str
@@ -162,7 +166,7 @@ def docs_redirection():
     return RedirectResponse('/redoc')
 
 
-api.mount("/", StaticFiles(directory="ui", html=True), name="root")
+# api.mount("/", StaticFiles(directory="ui", html=True), name="root")
 
 
 api.add_middleware(

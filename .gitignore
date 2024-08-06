@@ -166,3 +166,4 @@ cython_debug/
 *.stdout.txt
 *.db
 *__dontAdd__*/
+node_modules/
