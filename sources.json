@@ -14,7 +14,6 @@
 	"https://www.cybersecurity-insiders.com/feed/",
 	"https://threatpost.com/feed/",
 	"https://news.sophos.com/en-us/feed/",
-	"https://www.bankinfosecurity.com/rss-feeds",
 	"https://gbhackers.com/feed/",
 	"https://www.infosecurity-magazine.com/rss/news/",
 	"https://feeds.feedburner.com/eset/blog",
@@ -25,8 +24,7 @@
 	"https://blogs.quickheal.com/feed/",
 	"https://www.troyhunt.com/rss/",
 	"https://feedpress.me/CiscoSecurity",
-	"https://www.tripwire.com/blogs.xml",
-	"https://www.databreachtoday.com/rss-feeds"
+	"https://www.tripwire.com/blogs.xml"
     ],
     "atom": [
 	"https://internetsafetybrigade.org/our-blog/f.atom"

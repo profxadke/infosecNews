@@ -8,7 +8,7 @@ DB_NAME = 'news.db'
 def init_db():
     cx = sqlite(DB_NAME)
     cu = cx.cursor()
-    cu.execute("CREATE TABLE News( id INTEGER PRIMARY KEY, title TEXT NOT NULL, desc TEXT, link TEXT NOT NULL, date_added TIMESTAMP NOT NULL, image TEXT )")
+    cu.execute("CREATE TABLE News( id INTEGER PRIMARY KEY, feed TEXT NOT NULL, feed_digest TEXT, date_added TIMESTAMP NOT NULL )")
     cx.close()
 
 
@@ -26,12 +26,9 @@ def news_exists(key, value):
     )
 
 
-def insert_news(title, desc, link, date_added, img):
-    if not news_exists('link', link):
-        if desc:
-            e = db_cursor.execute('INSERT INTO News (title, desc, link, date_added, image) VALUES ( ?, ?, ?, ?, ? )', (title, desc, link, date_added, img))
-        else:
-            e = db_cursor.execute('INSERT INTO News (title, link, date_added, image) VALUES ( ?, ?, ?, ? )', (title, link, date_added, img))
+def insert_news(feed, feed_digest, date_added):
+    if not news_exists('feed_digest', feed_digest):
+        e = db_cursor.execute('INSERT INTO News (feed, feed_digest, date_added) VALUES ( ?, ?, ? )', (feed, feed_digest, date_added))
         database.commit()
         return e
     return True
@@ -44,22 +41,18 @@ def fetch_news(id=0) -> list:
         news = db_cursor.execute(f"SELECT * FROM News WHERE id={id}").fetchone()
         news = [{
             'id': news[0],
-            'title': news[1],
-            'desc': news[2],
-            'link': news[3],
-            'date_added': news[4],
-            'image': news[5]
+            'feed': news[1],
+            'feed_digest': news[2],
+            'date_added': news[3]
         }]
     else:
         news = []
         for row in db_cursor.execute("SELECT * FROM News"):
             news.append({
                 'id': row[0],
-                'title': row[1],
-                'desc': row[2],
-                'link': row[3],
-                'date_added': row[4],
-                'image': row[5]
+                'feed': row[1],
+                'feed_digest': row[2],
+                'date_added': row[3]
             })
     return news
 

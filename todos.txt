@@ -3,3 +3,7 @@
 - Paginate News UI
 - Either use Yokto for appending markup within DOM, or make use of DOMPurify to sanitize for XSS injection payloads.
 - Websocket, and UI based update while Updating/Refreshing news.
+
+----
+- Use frontend to parse xml, instead of backend for using this with cloudflare workers.
+- Add support to author, news thumbnail.
