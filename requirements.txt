@@ -1,0 +1,9 @@
+requests
+atoma
+brotli
+beautifulsoup4
+lxml
+fastapi
+pydantic
+uvicorn
+feedparser

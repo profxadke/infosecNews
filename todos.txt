@@ -1,0 +1,5 @@
+- Implementing support for atom feeds.
+- Add a preloader to UI
+- Paginate News UI
+- Either use Yokto for appending markup within DOM, or make use of DOMPurify to sanitize for XSS injection payloads.
+- Websocket, and UI based update while Updating/Refreshing news.

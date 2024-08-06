@@ -1,0 +1,68 @@
+/*
+:root {
+  --mdb-primary: #ff5722;
+  --mdb-primary-rgb: 255, 87, 34;
+  --mdb-primary-contrast: #ffffff;
+  --mdb-primary-contrast-rgb: 255, 255, 255;
+  --mdb-primary-dark: #e64a19;
+  --mdb-primary-dark-rgb: 230, 74, 25;
+  --mdb-primary-light: #ffccbc;
+  --mdb-primary-light-rgb: 255, 204, 188;
+}
+*/
+
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 20px !important;
+  box-shadow: 0 0 25px 1px rgba(111, 0, 255, 0.6) !important;
+}
+
+
+.card-body {
+  flex-grow: 1;
+}
+
+
+.card-img-top {
+  max-height: 47%;
+  object-fit: cover;
+  border-radius: 20px !important;
+}
+
+
+.card-link {
+  border-radius: 20px !important;
+}
+
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #FFFFFF;
+}
+
+
+.material-spinner {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 6px solid rgba(0, 0, 0, 0.1);
+  border-top-color: rgb(111, 0, 255);
+  animation: spin 1s linear infinite;
+}
+
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

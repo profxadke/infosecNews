@@ -1,0 +1,35 @@
+{
+    "rss": [
+        "https://www.darkreading.com/rss.xml",
+        "https://feeds.feedburner.com/TheHackersNews",
+	"https://grahamcluley.com/feed/",
+        "https://www.csoonline.com/feed/",
+        "https://krebsonsecurity.com/feed/",
+	"https://www.itsecurityguru.org/feed/",
+	"https://feeds.feedburner.com/securityweek",
+	"https://www.bleepingcomputer.com/feed/",
+	"https://www.helpnetsecurity.com/feed/",
+	"https://www.schneier.com/feed/",
+	"https://thecyberwire.com/feeds/rss.xml",
+	"https://www.cybersecurity-insiders.com/feed/",
+	"https://threatpost.com/feed/",
+	"https://news.sophos.com/en-us/feed/",
+	"https://www.bankinfosecurity.com/rss-feeds",
+	"https://gbhackers.com/feed/",
+	"https://www.infosecurity-magazine.com/rss/news/",
+	"https://feeds.feedburner.com/eset/blog",
+	"https://davinciforensics.co.za/cybersecurity/feed/",
+	"https://www.jisasoftech.com/feed/",
+	"https://ciso2ciso.com/feed/",
+	"http://feeds.trendmicro.com/TrendMicroResearch",
+	"https://blogs.quickheal.com/feed/",
+	"https://www.troyhunt.com/rss/",
+	"https://feedpress.me/CiscoSecurity",
+	"https://www.tripwire.com/blogs.xml",
+	"https://www.databreachtoday.com/rss-feeds"
+    ],
+    "atom": [
+	"https://internetsafetybrigade.org/our-blog/f.atom"
+    ],
+    "json": []
+}
