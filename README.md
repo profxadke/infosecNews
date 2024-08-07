@@ -1,13 +1,13 @@
 # infosecNews
 
-A simple REST API that compiles news from 28 different sources (as of now) and, returns or update news from specific sources from `/news` endpoint.
+A simple REST API that compiles news from 26 different sources (as of now) and, returns or updates news from specific sources from the `/news` endpoint.
 
 ## How to Install / Use
-1) First of all, get a vietual environment for this project.
+1) First of all, get a virtual environment for this project.
 ```sh
 $ virtualenv .venv  # if, uv installed: uv venv
 ```
-2) Activate the virtual enviroment which you just created.
+2) Activate the virtual environment that you just created.
 ```sh
 $ source .venv/bin/activate  # or, In Windows: .\.venv\Scripts\activate
 ```
@@ -15,7 +15,7 @@ $ source .venv/bin/activate  # or, In Windows: .\.venv\Scripts\activate
 ```sh
 $ pip install -r requirements.txt  # or, with uv: uv pip install -r requirements.txt
 ```
-4) After installation of dependencies, you can simply execute `main.py`
+4) After installation of dependencies, you can execute `main.py`
 ```sh
 $ python ./main.py  # or ./main.py in Linux!
 ```
