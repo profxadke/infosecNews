@@ -41,7 +41,7 @@ def fetch_news(id=0) -> list:
     if id:
         if not news_exists('id', id):
             return ['err', "Specified ID doesn't exist."]
-        news = db_cursor.execute(f"SELECT * FROM News WHERE id={id}").fetchone()
+        news = db_cursor.execute("SELECT * FROM News WHERE id = ?", (id,)).fetchone()
         news = [{
             'id': news[0],
             'title': news[1],
