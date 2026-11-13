@@ -166,3 +166,6 @@ cython_debug/
 *.stdout.txt
 *.db
 *__dontAdd__*/
+
+# I TOO KNOW HOW TO USE AI - aye!
+ai.sh

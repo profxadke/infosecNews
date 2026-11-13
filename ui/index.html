@@ -1,25 +1,628 @@
 <!DOCTYPE html>
-<html lang="en" data-mdb-theme="light">
+<html lang="en" data-theme="cyber-dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InfoSec News</title>
-  <!-- MDBootstrap CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" integrity="sha512-ZKfM1qLFiJLgCvofeUynr29hrH/sibnrInRxJp/tW7neQzbrp1Ak53JJUxBKtAX9UreCiJ43aOveZyfQXYt92g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- HTMX -->
-  <script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+  <title>InfoSec News // Real-Time Cyber Threat & Security Intelligence Radar</title>
+  
+  <!-- Web Manifest & Favicons -->
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0e17">
+  
+  <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons 6.5.2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- DOMPurify for XSS Sanitization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" integrity="sha512-jB0TkTBeQC9ZSkBqDhdmfTv1qdfbWpGE72JhVI5WBm245kW8m5mGoDa06akWqadNuhU7TLUNkXKeBXb8J5Pdqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container my-5">
-    <h1 class="mb-4 text-black">InfoSec News</h1>
-    <div id="news-container" class="row"></div>
+  <!-- Reading Scroll Progress Bar -->
+  <div class="page-scroll-progress" id="page-scroll-progress" aria-hidden="true"></div>
+
+  <!-- Ambient Cyber Background Grid Glow -->
+  <div class="cyber-bg-glow" aria-hidden="true"></div>
+  <div class="cyber-grid-overlay" aria-hidden="true"></div>
+
+  <!-- Top Breaking News Marquee / Threat Ticker -->
+  <aside class="threat-ticker-bar" id="threat-ticker-bar" aria-label="Latest Cybersecurity Disclosures">
+    <div class="ticker-badge">
+      <span class="pulsing-radar-dot"></span>
+      <i class="fa-solid fa-bolt-lightning"></i>
+      <span class="ticker-label">BREAKING THREAT INTEL</span>
+    </div>
+    <div class="ticker-track-wrapper">
+      <div class="ticker-track" id="ticker-track">
+        <span class="ticker-loading">Aggregating live threat disclosures from 26 global security sources...</span>
+      </div>
+    </div>
+    <button class="ticker-close-btn" id="ticker-close-btn" title="Dismiss Breaking Ticker" aria-label="Dismiss Ticker">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </aside>
+
+  <!-- Sticky Top Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <!-- Logo & System Status -->
+      <div class="brand-wrapper">
+        <a href="#" class="brand-logo" id="brand-logo" title="Reload Feed">
+          <div class="logo-icon-wrapper">
+            <i class="fa-solid fa-shield-halved logo-icon"></i>
+            <span class="radar-sweep-ring"></span>
+          </div>
+          <div class="brand-text-group">
+            <div class="brand-title">
+              <span class="title-primary">INFOSEC</span>
+              <span class="title-accent">// NEWS</span>
+            </div>
+            <div class="brand-subtitle">THREAT RADAR & INTEL FEED</div>
+          </div>
+        </a>
+
+        <!-- System Status Beacon -->
+        <div class="live-status-pill" id="live-status-pill" title="Live System Connection">
+          <span class="status-pulse-dot"></span>
+          <span class="status-text" id="status-text">FEED ACTIVE</span>
+          <span class="status-count-badge" id="header-total-badge">0</span>
+        </div>
+      </div>
+
+      <!-- Quick Global Search Bar -->
+      <div class="header-search-wrapper">
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="search" 
+            id="global-search-input" 
+            class="global-search-input" 
+            placeholder="Search CVEs, zero-days, ransomware, sources..." 
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search threat disclosures"
+          >
+          <button class="search-clear-btn" id="search-clear-btn" title="Clear Search" aria-label="Clear Search" style="display: none;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <kbd class="search-kbd-hint" title="Press / or Ctrl+K to search">/</kbd>
+        </div>
+      </div>
+
+      <!-- Header Action Controls -->
+      <div class="header-actions">
+        <!-- Sync / Refresh Feeds Button -->
+        <button class="action-btn btn-sync" id="sync-feeds-btn" title="Fetch & Synchronize RSS Feeds (Ctrl+R / R)">
+          <i class="fa-solid fa-arrows-rotate sync-icon"></i>
+          <span class="btn-label" id="sync-btn-label">Sync Feeds</span>
+        </button>
+
+        <!-- Bookmarks Filter Button -->
+        <button class="action-btn btn-bookmarks" id="toggle-bookmarks-btn" title="View Saved Articles (B)">
+          <i class="fa-solid fa-bookmark bookmark-icon"></i>
+          <span class="btn-label">Saved</span>
+          <span class="badge-counter" id="saved-counter-badge">0</span>
+        </button>
+
+        <!-- View Mode Switcher: Grid vs List -->
+        <div class="view-mode-toggle" role="group" aria-label="Feed Display Layout">
+          <button class="view-btn active" id="view-grid-btn" title="Card Grid View (G)" aria-pressed="true">
+            <i class="fa-solid fa-grip"></i>
+          </button>
+          <button class="view-btn" id="view-list-btn" title="Compact Intel List View (G)" aria-pressed="false">
+            <i class="fa-solid fa-list-ul"></i>
+          </button>
+        </div>
+
+        <!-- Theme Selector Menu -->
+        <div class="theme-dropdown-wrapper">
+          <button class="action-btn icon-only-btn theme-toggle-btn" id="theme-toggle-btn" title="Cycle Themes (T)" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon theme-icon" id="theme-icon"></i>
+          </button>
+        </div>
+
+        <!-- Audio Synthesizer SFX Toggle -->
+        <button class="action-btn icon-only-btn" id="sound-toggle-btn" title="Toggle Cyber Audio SFX" aria-label="Toggle Audio">
+          <i class="fa-solid fa-volume-xmark" id="sound-icon"></i>
+        </button>
+
+        <!-- Export Digest Modal Trigger -->
+        <button class="action-btn icon-only-btn" id="open-export-btn" title="Export Intel Report">
+          <i class="fa-solid fa-file-export"></i>
+        </button>
+
+        <!-- Keyboard Shortcuts Help -->
+        <button class="action-btn icon-only-btn" id="open-shortcuts-btn" title="Keyboard Shortcuts (?)">
+          <i class="fa-solid fa-keyboard"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Synchronization Status Banner -->
+  <aside class="sync-live-banner" id="sync-live-banner" style="display: none;" role="status" aria-live="polite">
+    <div class="sync-banner-content">
+      <div class="sync-banner-left">
+        <div class="sync-radar-spinner">
+          <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+        </div>
+        <div class="sync-banner-info">
+          <div class="sync-banner-title">
+            <span class="sync-badge">LIVE SYNC</span>
+            <span class="sync-banner-source" id="sync-banner-source">Connecting to threat intelligence feeds...</span>
+          </div>
+          <div class="sync-banner-details" id="sync-banner-details">
+            Ingesting source 0 of 26 &bull; 0% complete &bull; 0 new disclosures
+          </div>
+        </div>
+      </div>
+      <div class="sync-banner-right">
+        <span class="sync-banner-pct" id="sync-banner-pct">0%</span>
+      </div>
+    </div>
+    <div class="sync-banner-progress-bar">
+      <div class="sync-banner-progress-fill" id="sync-banner-progress-fill" style="width: 0%;"></div>
+    </div>
+  </aside>
+
+  <!-- Main Application Body -->
+  <main class="app-main-content">
+    <div class="content-container">
+
+      <!-- Cyber Threat Dashboard / Metrics Overview -->
+      <section class="metrics-dashboard" id="metrics-dashboard" aria-label="Threat Overview Dashboard">
+        <div class="metrics-grid">
+          <!-- Total Disclosures -->
+          <div class="metric-card" data-metric="total">
+            <div class="metric-icon-box cyan">
+              <i class="fa-solid fa-shield-virus"></i>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Tracked Disclosures</div>
+              <div class="metric-value" id="stat-total-disclosures">0</div>
+              <div class="metric-subtext">Across active RSS feeds</div>
+            </div>
+          </div>
+
+          <!-- Verified Sources -->
+          <div class="metric-card" data-metric="sources">
+            <div class="metric-icon-box emerald">
+              <i class="fa-solid fa-satellite-dish"></i>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Monitored Sources</div>
+              <div class="metric-value" id="stat-monitored-sources">0</div>
+              <div class="metric-subtext">Verified infosec publishers</div>
+            </div>
+          </div>
+
+          <!-- Today's Disclosures -->
+          <div class="metric-card" data-metric="today">
+            <div class="metric-icon-box amber">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Latest Ingestion</div>
+              <div class="metric-value" id="stat-latest-count">0</div>
+              <div class="metric-subtext" id="stat-latest-time">Freshly indexed</div>
+            </div>
+          </div>
+
+          <!-- Triaged / Read Progress -->
+          <div class="metric-card" data-metric="read">
+            <div class="metric-icon-box purple">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div class="metric-info">
+              <div class="metric-label">Triage & Reading</div>
+              <div class="metric-value" id="stat-read-progress">0%</div>
+              <div class="metric-subtext" id="stat-read-ratio">0 read / 0 total</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trending Security Topic Chips Bar -->
+        <div class="trending-topics-bar">
+          <div class="topics-header">
+            <i class="fa-solid fa-tags topics-icon"></i>
+            <span class="topics-title">INTEL TOPICS:</span>
+          </div>
+          <div class="topics-scroll-container" id="topics-chips-container">
+            <button class="topic-chip active" data-topic="all">
+              <i class="fa-solid fa-asterisk"></i> All Topics
+            </button>
+            <button class="topic-chip" data-topic="zero-day">
+              <i class="fa-solid fa-triangle-exclamation"></i> Zero-Days & Exploits
+            </button>
+            <button class="topic-chip" data-topic="ransomware">
+              <i class="fa-solid fa-skull-crossbones"></i> Ransomware
+            </button>
+            <button class="topic-chip" data-topic="malware">
+              <i class="fa-solid fa-bug"></i> Malware & Botnets
+            </button>
+            <button class="topic-chip" data-topic="breach">
+              <i class="fa-solid fa-database"></i> Data Breaches
+            </button>
+            <button class="topic-chip" data-topic="vulnerability">
+              <i class="fa-solid fa-unlock-keyhole"></i> Vulnerabilities
+            </button>
+            <button class="topic-chip" data-topic="ai-security">
+              <i class="fa-solid fa-microchip"></i> AI & LLM Threat
+            </button>
+            <button class="topic-chip" data-topic="cloud">
+              <i class="fa-solid fa-cloud"></i> Cloud Security
+            </button>
+            <button class="topic-chip" data-topic="apt">
+              <i class="fa-solid fa-user-secret"></i> Nation-State APT
+            </button>
+            <button class="topic-chip" data-topic="policy">
+              <i class="fa-solid fa-scale-balanced"></i> Policy & Gov
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advanced Filter & Control Toolbar -->
+      <section class="feed-controls-toolbar" aria-label="Feed Filters and Sorting">
+        <div class="filter-controls-left">
+          <!-- Source Publication Filter -->
+          <div class="control-select-wrapper">
+            <label for="source-filter-select" class="control-label">
+              <i class="fa-solid fa-tower-broadcast"></i> Source
+            </label>
+            <select id="source-filter-select" class="custom-select" aria-label="Filter by source publication">
+              <option value="all">All Sources (All)</option>
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <!-- Reading Status Filter -->
+          <div class="control-select-wrapper">
+            <label for="status-filter-select" class="control-label">
+              <i class="fa-solid fa-filter"></i> Status
+            </label>
+            <select id="status-filter-select" class="custom-select" aria-label="Filter by reading status">
+              <option value="all">All Articles</option>
+              <option value="unread">Unread Only</option>
+              <option value="saved">Saved / Bookmarked</option>
+              <option value="read">Read Only</option>
+            </select>
+          </div>
+
+          <!-- Sort Order Selector -->
+          <div class="control-select-wrapper">
+            <label for="sort-select" class="control-label">
+              <i class="fa-solid fa-arrow-down-short-wide"></i> Sort By
+            </label>
+            <select id="sort-select" class="custom-select" aria-label="Sort articles order">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="source">Publication (A-Z)</option>
+              <option value="title">Headline (A-Z)</option>
+              <option value="random">Discovery Shuffle</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-controls-right">
+          <!-- Active Filtering Summary & Reset -->
+          <div class="filter-summary-group">
+            <span class="results-count-text" id="results-count-text">Loading threat feed...</span>
+            <button class="reset-filters-btn" id="reset-filters-btn" title="Reset all search filters" style="display: none;">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+
+          <!-- Mark All Visible As Read Button -->
+          <button class="action-btn btn-sm btn-subtle" id="mark-visible-read-btn" title="Mark current page articles as read">
+            <i class="fa-solid fa-check-double"></i>
+            <span class="btn-label-desktop">Mark Page Read</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Filter Tags Display (Shows search terms, active source, etc.) -->
+      <div class="active-tags-container" id="active-tags-container" style="display: none;">
+        <span class="active-tags-label"><i class="fa-solid fa-filter-circle-xmark"></i> Active Filters:</span>
+        <div class="active-tags-list" id="active-tags-list"></div>
+        <button class="clear-all-tags-btn" id="clear-all-tags-btn">Clear All</button>
+      </div>
+
+      <!-- Skeleton Loading State -->
+      <div class="skeleton-grid-container" id="skeleton-container" aria-hidden="true">
+        <!-- 6 Skeleton Cards -->
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-badge"></div><div class="skeleton-title"></div><div class="skeleton-title short"></div><div class="skeleton-text"></div><div class="skeleton-footer"></div></div></div>
+      </div>
+
+      <!-- Main News Feed Container (Grid or List Layout) -->
+      <div id="news-container" class="news-container grid-layout" role="feed" aria-live="polite">
+        <!-- News cards will be dynamically rendered here -->
+      </div>
+
+      <!-- Empty State (When zero items match filters) -->
+      <div class="empty-state-card" id="empty-state-card" style="display: none;">
+        <div class="empty-icon-radar">
+          <i class="fa-solid fa-satellite-dish"></i>
+          <span class="empty-radar-ping"></span>
+        </div>
+        <h3 class="empty-title">No Intelligence Reports Found</h3>
+        <p class="empty-description" id="empty-description">
+          We couldn't find any threat disclosures matching your current filter criteria.
+        </p>
+        <div class="empty-actions">
+          <button class="action-btn btn-primary" id="empty-reset-btn">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Reset All Filters
+          </button>
+          <button class="action-btn btn-sync" id="empty-sync-btn">
+            <i class="fa-solid fa-arrows-rotate"></i> Sync Live Feeds
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination & Load More Controller -->
+      <nav class="feed-pagination-bar" id="pagination-bar" aria-label="Feed Navigation" style="display: none;">
+        <div class="pagination-info">
+          Showing <span id="pag-start">1</span>-<span id="pag-end">18</span> of <span id="pag-total">255</span> reports
+        </div>
+
+        <div class="pagination-actions">
+          <button class="action-btn btn-secondary btn-load-more" id="load-more-btn">
+            <i class="fa-solid fa-plus"></i> Load More Disclosures
+          </button>
+          
+          <div class="page-controls-group">
+            <button class="page-nav-btn" id="pag-prev-btn" title="Previous Page" aria-label="Previous Page">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="page-numbers-list" id="page-numbers-list">
+              <!-- Dynamically populated page pills -->
+            </div>
+            <button class="page-nav-btn" id="pag-next-btn" title="Next Page" aria-label="Next Page">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="items-per-page-group">
+          <label for="page-size-select" class="page-size-label">Per page:</label>
+          <select id="page-size-select" class="custom-select page-size-select">
+            <option value="18" selected>18</option>
+            <option value="36">36</option>
+            <option value="72">72</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+      </nav>
+
+    </div>
+  </main>
+
+  <!-- Interactive Quick Preview Modal -->
+  <div class="cyber-modal-backdrop" id="preview-modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="cyber-modal-card">
+      <!-- Modal Navigation Header -->
+      <div class="modal-nav-header">
+        <div class="modal-nav-left">
+          <button class="modal-nav-arrow" id="modal-prev-btn" title="Previous Story (Left Arrow)" aria-label="Previous Story">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <span class="modal-index-counter" id="modal-index-counter">Story 1 of 255</span>
+          <button class="modal-nav-arrow" id="modal-next-btn" title="Next Story (Right Arrow)" aria-label="Next Story">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="modal-nav-right">
+          <button class="modal-close-btn" id="modal-close-btn" title="Close Preview (Esc)" aria-label="Close Preview">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content Body -->
+      <div class="modal-scroll-body" id="modal-scroll-body">
+        <!-- Hero Image -->
+        <div class="modal-hero-wrapper" id="modal-hero-wrapper">
+          <img src="" alt="Story Thumbnail" id="modal-hero-img" class="modal-hero-img">
+          <div class="modal-hero-overlay"></div>
+          <div class="modal-badges-group" id="modal-badges-group">
+            <span class="source-pill" id="modal-source-pill">Dark Reading</span>
+            <span class="category-pill" id="modal-category-pill">Zero-Day / Exploit</span>
+            <span class="date-pill" id="modal-date-pill"><i class="fa-regular fa-calendar"></i> Today</span>
+          </div>
+        </div>
+
+        <div class="modal-text-content">
+          <h2 class="modal-title" id="modal-title">Article Headline Goes Here</h2>
+          
+          <div class="modal-meta-bar">
+            <div class="meta-item">
+              <i class="fa-solid fa-globe"></i>
+              <span id="modal-meta-domain">darkreading.com</span>
+            </div>
+            <div class="meta-item">
+              <i class="fa-regular fa-clock"></i>
+              <span id="modal-meta-readtime">2 min read</span>
+            </div>
+            <div class="meta-item" id="modal-read-status-item">
+              <i class="fa-solid fa-check"></i>
+              <span id="modal-meta-status">Unread</span>
+            </div>
+          </div>
+
+          <div class="modal-divider"></div>
+
+          <div class="modal-description" id="modal-description">
+            <!-- Full description injected here (purified with DOMPurify) -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Action Toolbar -->
+      <div class="modal-action-footer">
+        <div class="modal-footer-left">
+          <button class="modal-btn btn-bookmark" id="modal-bookmark-btn" title="Save this article">
+            <i class="fa-regular fa-bookmark" id="modal-bookmark-icon"></i>
+            <span id="modal-bookmark-label">Bookmark</span>
+          </button>
+          <button class="modal-btn btn-read-status" id="modal-mark-read-btn" title="Toggle read/unread">
+            <i class="fa-regular fa-circle-check" id="modal-read-icon"></i>
+            <span id="modal-read-label">Mark Read</span>
+          </button>
+          <button class="modal-btn btn-copy-link" id="modal-copy-btn" title="Copy article link">
+            <i class="fa-solid fa-link"></i>
+            <span>Copy Link</span>
+          </button>
+          <button class="modal-btn btn-share" id="modal-share-btn" title="Share article">
+            <i class="fa-solid fa-share-nodes"></i>
+            <span>Share</span>
+          </button>
+        </div>
+        <div class="modal-footer-right">
+          <a href="#" target="_blank" rel="noopener noreferrer" class="modal-btn btn-primary btn-open-external" id="modal-open-link">
+            <span>Read Full Source Article</span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- MDBootstrap JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.es.min.js" integrity="sha512-BeqBR1tSs66TKfRbufAK3jbKyG2ysd45VAiL+/2QFMEhlJ6JAvzvl6RVTiUh2yi/cVseSrGOgc+QvIUbTubDFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <!-- Custom Scripts -->
+  <!-- Export Intelligence Report Modal -->
+  <div class="cyber-modal-backdrop" id="export-modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="cyber-modal-card export-modal-card">
+      <div class="modal-nav-header">
+        <div class="export-header-title">
+          <i class="fa-solid fa-file-export export-title-icon"></i>
+          <span>Export Security Intelligence Brief</span>
+        </div>
+        <button class="modal-close-btn" id="export-close-btn" aria-label="Close Export Modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-scroll-body">
+        <p class="export-desc">
+          Generate an intelligence report from your current filtered view or saved articles. Export directly to Markdown (for tickets, Slack, or newsletters) or structured JSON.
+        </p>
+
+        <div class="export-options-row">
+          <label class="export-option-label">
+            <input type="radio" name="export-scope" value="filtered" checked id="export-scope-filtered">
+            <span>Current Filtered View (<span id="export-filtered-count">0</span> stories)</span>
+          </label>
+          <label class="export-option-label">
+            <input type="radio" name="export-scope" value="saved" id="export-scope-saved">
+            <span>Saved Bookmarks Only (<span id="export-saved-count">0</span> stories)</span>
+          </label>
+        </div>
+
+        <div class="export-format-tabs">
+          <button class="format-tab-btn active" id="tab-format-md">Markdown Brief</button>
+          <button class="format-tab-btn" id="tab-format-json">Raw JSON</button>
+        </div>
+
+        <div class="export-preview-wrapper">
+          <textarea id="export-preview-text" class="export-preview-textarea" readonly spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-action-footer">
+        <button class="modal-btn btn-subtle" id="export-cancel-btn">Close</button>
+        <div class="modal-footer-right">
+          <button class="modal-btn btn-secondary" id="export-download-btn">
+            <i class="fa-solid fa-download"></i> Download File
+          </button>
+          <button class="modal-btn btn-primary" id="export-copy-btn">
+            <i class="fa-solid fa-copy"></i> Copy to Clipboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Cheat Sheet Modal -->
+  <div class="cyber-modal-backdrop" id="shortcuts-modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="cyber-modal-card shortcuts-modal-card">
+      <div class="modal-nav-header">
+        <div class="export-header-title">
+          <i class="fa-solid fa-keyboard export-title-icon"></i>
+          <span>Keyboard Shortcuts</span>
+        </div>
+        <button class="modal-close-btn" id="shortcuts-close-btn" aria-label="Close Shortcuts Modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-scroll-body">
+        <div class="shortcuts-grid">
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>/</kbd> or <kbd>Ctrl+K</kbd></div>
+            <div class="shortcut-action">Focus global search bar</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Ctrl+R</kbd> or <kbd>r</kbd></div>
+            <div class="shortcut-action">Sync feeds (Ctrl+Shift+R for browser reload)</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>t</kbd></div>
+            <div class="shortcut-action">Cycle theme (Dark / Terminal / Light)</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>g</kbd></div>
+            <div class="shortcut-action">Toggle Grid vs List layout</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>b</kbd></div>
+            <div class="shortcut-action">Toggle Saved / Bookmarked filter</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>e</kbd></div>
+            <div class="shortcut-action">Open Export Intelligence modal</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>&larr;</kbd> / <kbd>&rarr;</kbd></div>
+            <div class="shortcut-action">Navigate stories inside Preview modal</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>Esc</kbd></div>
+            <div class="shortcut-action">Close active modal / Clear search</div>
+          </div>
+          <div class="shortcut-item">
+            <div class="shortcut-keys"><kbd>?</kbd></div>
+            <div class="shortcut-action">Open this shortcuts cheatsheet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Scroll To Top Button -->
+  <button class="floating-top-btn" id="floating-top-btn" title="Back to top" aria-label="Back to top">
+    <i class="fa-solid fa-arrow-up"></i>
+    <svg class="progress-ring" width="46" height="46">
+      <circle class="progress-ring-circle" stroke="currentColor" stroke-width="3" fill="transparent" r="20" cx="23" cy="23"/>
+    </svg>
+  </button>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack-container" id="toast-stack-container" aria-live="assertive"></div>
+
+  <!-- Core Application Scripts -->
   <script src="scripts.js"></script>
 </body>
 </html>
